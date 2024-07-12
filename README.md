@@ -1,12 +1,11 @@
 # Iniciando um projeto Node.js com TypeScript
 
-Faça uma conta no github, caso ainda não tenha uma. Depois, siga os passos abaixo:
+### Faça uma conta no github, caso ainda não tenha uma. Depois, siga os passos abaixo:
 
 Clique no ícone "+" do canto superior direito e clique em new repository.
-Escolha um nome para o repositório e confirme a caixa do Add a README file. Após isso, finalize clicando no botão verde.
+Escolha um nome para o repositório e confirme a caixa do ```Add a README file```. Após isso, finalize clicando no botão verde.
 
-
-Crie um diretório para o projeto e acesse-o pelo vscode, abra o terminal e siga os passos abaixo. 
+Crie um diretório para o projeto e acesse-o pelo codespace do Github, para abri-lo, acesse ```Code```, clique em ```Codespaces``` e clique no + para criar um arquivo que abrirá automaticamente. (ele tem nomes aleatórios). Para acessá-lo novamente ao sair, faça o mesmo procedimento que fora usado para criar, dessa vez criando no nome abaixo de ```On current branch```(Ele possuirá um ```main*``` pequeno abaixo, indicando seu códico primário), abra o terminal e siga os passos abaixo. 
 
 - Para a instalação do Node js, escreva ou copie o código abaixo no terminal. (OBSERVAÇÃO, PARA ABRIR O TERMINAL, APERTE CTRL + ASPAS). 
 
@@ -21,7 +20,7 @@ touch src/app.ts
 
 ## Configurando o `tsconfig.json`
 
-Abra o arquivo e procure a linha onde está escrito ```"outDir": "./",``` e mude para ```"outDir": "./dist",```, da mesma forma, faça o mesmo substituindo ```"rootDirs": [],``` por ```"rootDir": "./src",``` Seu arquivo de configuração do compilador do TypeScript ficará mais ou menos assim:
+Abra o arquivo e procure a linha onde estará escrito ```"outDir": "./",``` e substitua por ```"outDir": "./dist",```, da mesma forma, faça o mesmo substituindo ```"rootDirs": [],``` por ```"rootDir": "./src",``` Seu arquivo de configuração do compilador do TypeScript ficará mais ou menos assim:
 
 ```json
 {
@@ -84,11 +83,11 @@ Se tudo ocorrer bem, você verá a mensagem `Server running on port 3333` no ter
 
 ## Testando o servidor
 
-Abra o navegador e acesse `http://localhost:3333` ou aparecerá uma mensagem no canto inferior direito, levando diretamente ao localhost e você verá a mensagem `Hello World`.
+Abra o navegador e acesse `http://localhost:3333` ou no momento em que dar a ordem de ```npm run dev``` aparecerá uma mensagem no canto inferior direito escrito ```abrir no navegador```, isso te levará diretamente ao localhost e você verá a mensagem `Hello World`.
 
 ## Configurando o banco de dados
 
-Crie um arquivo chamado `database.ts` dentro da pasta `src` e adicione o seguinte código.
+Crie um arquivo chamado `database.ts` dentro da pasta `src` e adicione o seguinte código:
 
 ```typescript
 import { open } from 'sqlite';
@@ -159,11 +158,11 @@ app.listen(port, () => {
 
 - Clique em ```Get```, trocando para ```Post```.
 
-- C
+- Clique em ```Body``` e aperte na bolinha escrito ```raw```, desse jeito, abrirá um JSON.
 
 ## Testando a inserção de dados
 
-- Faça uma requisição POST para `http://localhost:3333/users` (para conseguir o local host, é necessário estár com o terminal rodando em ```ndm run dev```, dessa maneira, coloque ecom o seguinte corpo.
+- Faça uma requisição POST para `http://localhost:3333/users` (para conseguir o local host, é necessário que o terminal ainda esteja rodando a porta, caso não estiver, escreva novamente ```npm run dev```), dessa maneira, coloque o seguinte corpo na parte JSON:
 
 ```json
 {
@@ -171,8 +170,7 @@ app.listen(port, () => {
   "email": "
 }
 ```
-
-Se tudo ocorrer bem, você verá a resposta com o usuário inserido.
+Para que o código funcione, é necessário tornar a porta do localhost pública. (Como fazer: ao lado de ```terminal```, está escrito ```portas```. Se estiver rodando, terá um link para a porta 3333. Clique com o botão direito sobre o link e vá em visibilidade da porta, a tornando ```pública```). Após feito, volte para o Postman e clique no botão laranja escrito ```send```. Se tudo ocorrer bem, você verá a resposta com o usuário inserido.
 
 ```json
 {
@@ -184,7 +182,8 @@ Se tudo ocorrer bem, você verá a resposta com o usuário inserido.
 
 ## Listando os usuários
 
-Adicione a rota `/users` ao servidor.
+Adicione a rota `/users` ao servidor, no arquivo ```src/app.ts```, abaixo do ({}); do res.json(user);, colocando o código seguinte:
+
 
 ```typescript
 app.get('/users', async (req, res) => {
