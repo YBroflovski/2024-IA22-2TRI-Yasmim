@@ -4,7 +4,8 @@ import sqlite3 from 'sqlite3';
 let instance: Database | null = null;
 
 export async function connect() {
-  if (instance) return instance;
+  if (instance !== null) 
+      return instance;
 
   const db = await open({
      filename: './src/database.sqlite',

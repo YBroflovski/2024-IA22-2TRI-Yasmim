@@ -17,22 +17,31 @@ npx tsc --init
 mkdir src
 touch src/app.ts
 ```
+- #### Crie um novo arquivo chamado .gitignore. Nele, adicione o seguinte spricpt:
+```typescript 
+node_modules/
+dist/
+
+database.sqlite
+```
+
+database.sqlite
 
 ## Configurando o `tsconfig.json`
 
-Abra o arquivo e procure a linha onde estará escrito ```"outDir": "./",``` e substitua por ```"outDir": "./dist",```, da mesma forma, faça o mesmo substituindo ```"rootDirs": [],``` por ```"rootDir": "./src",``` Seu arquivo de configuração do compilador do TypeScript ficará mais ou menos assim:
+Abra o arquivo e procure a linha onde estará escrito ```"outDir": "./",``` e substitua por ```"outDir": "./dist"``` sem ser comentário ```//```,```, da mesma forma, faça o mesmo substituindo ```"rootDirs": [],``` por ```"rootDir": "./src",```. Seu arquivo de configuração do compilador do TypeScript ficará mais ou menos assim:
 
 ```json
 {
   "compilerOptions": {
     "target": "ES2017",
     "module": "commonjs",
-    "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
+    "outDir": "./dist", 
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    true"strict": true,
   }
 }
 ```
@@ -90,19 +99,16 @@ Abra o navegador e acesse `http://localhost:3333` ou no momento em que dar a ord
 Crie um arquivo chamado `database.ts` dentro da pasta `src` e adicione o seguinte código:
 
 ```typescript
-import { open } from 'sqlite';
+import { open, Database } from 'sqlite';
 import sqlite3 from 'sqlite3';
-
-let instance: sqlite3.Database | null = null;
-
+let instance: Database | null = null;
 export async function connect() {
-  if (instance) return instance;
-
+  if (instance !== null) 
+      return instance;
   const db = await open({
      filename: './src/database.sqlite',
      driver: sqlite3.Database
    });
-  
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -110,7 +116,6 @@ export async function connect() {
       email TEXT
     )
   `);
-
   instance = db;
   return db;
 }
@@ -135,13 +140,17 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+app.get('/users', async (req, res) => {
+  const db = await connect();
+  const users = await db.all('SELECT * FROM users');
+  res.json(users);
+});
+
 app.post('/users', async (req, res) => {
   const db = await connect();
   const { name, email } = req.body;
-
   const result = await db.run('INSERT INTO users (name, email) VALUES (?, ?)', [name, email]);
   const user = await db.get('SELECT * FROM users WHERE id = ?', [result.lastID]);
-
   res.json(user);
 });
 
@@ -167,7 +176,7 @@ app.listen(port, () => {
 ```json
 {
   "name": "John Doe",
-  "email": "
+  "email": "johndoe@mail.com"
 }
 ```
 Para que o código funcione, é necessário tornar a porta do localhost pública. (Como fazer: ao lado de ```terminal```, está escrito ```portas```. Se estiver rodando, terá um link para a porta 3333. Clique com o botão direito sobre o link e vá em visibilidade da porta, a tornando ```pública```). Após feito, volte para o Postman e clique no botão laranja escrito ```send```. Se tudo ocorrer bem, você verá a resposta com o usuário inserido.
@@ -176,7 +185,7 @@ Para que o código funcione, é necessário tornar a porta do localhost pública
 {
   "id": 1,
   "name": "John Doe",
-  "email": "
+  "email": "johndoe@mail.com"
 }
 ```
 
@@ -189,7 +198,35 @@ Adicione a rota `/users` ao servidor, no arquivo ```src/app.ts```, abaixo do ({}
 app.get('/users', async (req, res) => {
   const db = await connect();
   const users = await db.all('SELECT * FROM users');
-
   res.json(users);
+});
+```
+
+## Editando um usuário
+
+Adicione a rota `/users/:id` ao servidor.
+
+```typescript
+app.put('/users/:id', async (req, res) => {
+  const db = await connect();
+  const { name, email } = req.body;
+  const { id } = req.params;
+  await db.run('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
+  const user = await db.get('SELECT * FROM users WHERE id = ?', [id]);
+  res.json(user);
+});
+```
+## Deletando um usuário
+
+Adicione a rota `/users/:id` ao servidor.
+
+```typescript
+app.delete('/users/:id', async (req, res) => {
+  const db = await connect();
+  const { id } = req.params;
+
+  await db.run('DELETE FROM users WHERE id = ?', [id]);
+
+  res.json({ message: 'User deleted' });
 });
 ```
